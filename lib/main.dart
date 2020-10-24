@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
             EditOrderScreen(
         //      shopId: (ModalRoute.of(context).settings.arguments as CreateOrderScreenArguments).shopId,
             ),
+        EditOrderScreen.routeName: (context) => EditOrderScreen(),
         ImageScreen.route : (context) =>
             ImageScreen(
               uuid: (ModalRoute.of(context).settings.arguments as ImageScreenArguments).uuid,

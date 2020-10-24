@@ -167,6 +167,11 @@ class Order {
     if(dev.length == 0) dev = null;
     device = dev;
   }
+
+  @override
+  String toString() {
+    return 'Order{id: $id, number: $number, dateCreate: $dateCreate, status: $status, contractor: $contractor, device: $device, isUrgent: $isUrgent, isDeadline: $isDeadline, isStatusDeadline: $isStatusDeadline, sum: $sum, phones: $phones}';
+  }
 }
 
 class Status {

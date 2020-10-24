@@ -542,6 +542,10 @@ class Api {
       || (responseSmall.statusCode == 404 && response.statusCode == 404);
   }
 
+  Future<String> getOrder(String id) async{
+
+  }
+
 
 }
 
