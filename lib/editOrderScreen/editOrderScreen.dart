@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:live_sklad/OrderParams.dart';
+import 'package:live_sklad/api.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../apiData.dart';
@@ -90,13 +91,13 @@ class EditOrderScreenState extends State<EditOrderScreen> {
   var isDropDownClicked = false;
 
   buildDropdown() => Container(
-        padding: EdgeInsets.only(right: 5,left:5),
+        padding: EdgeInsets.only(right: 5, left: 5),
         width: double.infinity,
         decoration: BoxDecoration(
             border: Border.all(
               color: Colors.orangeAccent,
             ),
-            color:Colors.orangeAccent,
+            color: Colors.orangeAccent,
             borderRadius: BorderRadius.all(Radius.circular(4))),
         child: DropdownButton(
           onChanged: (value) {
@@ -107,8 +108,9 @@ class EditOrderScreenState extends State<EditOrderScreen> {
           value: dropDownOptions[currentOption],
           underline: Container(),
           iconEnabledColor: Colors.white,
-          isExpanded:true,
-          style: TextStyle(color: Colors.deepPurple), //ЧОМУ НЕ РОБИТ???????????????????????????
+          isExpanded: true,
+          style: TextStyle(color: Colors.deepPurple),
+          //ЧОМУ НЕ РОБИТ???????????????????????????
           items: dropDownOptions.map((String year) {
             return DropdownMenuItem<String>(
               value: year,
@@ -128,143 +130,187 @@ class EditOrderScreenState extends State<EditOrderScreen> {
         ),
       );
 
+  alohaTest(String id) async{
+    Api api = await Api.getInstance();
+    print("Getting");
+    print(await api.getOrder(id));
+  }
   @override
   Widget build(BuildContext context) {
+
     final OrderParams args = ModalRoute.of(context).settings.arguments;
-    print("ID!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + args.toString());
+    alohaTest(args.order.id);
+    print("ID!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + args.order.toString());
     String orderNumb = args.order.number;
     bool isHot = true;
     return Scaffold(
-      body: SafeArea(
+        body: buildHeader(orderNumb, isHot));
+  }
+
+  buildTabbar()=> DefaultTabController(
+    length: 2,
+    child: Column(
+      children: <Widget>[
+        Container(
+          constraints: BoxConstraints.expand(height: 50),
+          child: TabBar(
+            tabs: [
+              Tab(
+                text: "Информация о заказе",
+              ),
+              Tab(text: "Работы и материалы"),
+            ],
+            labelColor: Colors.black,
+          ),
+        ),
+        Expanded(
+          child: TabBarView(
+              children: [
+                Container(
+                  child: Text(
+                    "Home Body",
+                  ),
+                ),
+                Container(
+                  child: Text("Articles Body"),
+                ),
+              ]),
+        )
+      ],
+    ),
+  );
+
+  buildSecondScreen() => Expanded(
           child: Container(
-        color: Colors.white,
+        margin: EdgeInsets.only(left: 16, right: 16, top: 14),
         child: Column(
           children: [
-            ///ToolBar
-            Container(
-              height: 80,
-              decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(width: 2, color: StyleColor.light))),
-              child: Row(
-                //    mainAxisSize: MainAxisSize.max,
-                //  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(left: 10),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                      child: Material(
-                        child: InkWell(
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            child: Icon(Icons.arrow_back_ios),
-                          ),
-                          onTap: onClose != null
-                              ? onClose
-                              : () {
-                                  Navigator.pop(context);
-                                },
-                        ),
-                        color: Colors.transparent,
-                      ),
-                    ),
-                  ),
-                  //    Expanded(child:
-                  //  Center(child:
-                  Container(
-                    margin: EdgeInsets.only(left: 5, top: 0),
-                    child: Text(
-                      'Заказ №' + orderNumb,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontFamily: 'Medium',
-                        fontSize: 22,
-                        color: StyleColor.text,
-                        height: 1.2,
-                      ),
-                    ),
-                    //    ),
-                    //   ),
-                  ),
-                  //  Expanded(child:
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: !isHot
-                        ? Container()
-                        : Container(
-                            color: Colors.transparent,
-                            margin: EdgeInsets.only(left: 5, bottom: 10),
-                            width: 11.2 * 0.99,
-                            height: 14 * 0.99,
-                            child: Image.asset(
-                              "images/Hot@2x.png",
-                              // isHot?"assets/images/ScladIcons/Hot.png":"",
-                              //   width: 11.2*0.99,
-                              //     height: 14*0.99,
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                    //     ),
-                  ),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Row(
-                        children: [
-                          Expanded(
-                              child: Align(
-                            alignment: Alignment.centerRight,
+            buildDropdown(),
+          ],
+        ),
+      ));
+
+  buildHeader(String orderNumb, bool isHot) => SafeArea(
+    child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              //buildTabbar(),
+              Container(
+                height: 80,
+                decoration: BoxDecoration(
+                    border: Border(
+                        bottom: BorderSide(width: 2, color: StyleColor.light))),
+                child: Row(
+                  //    mainAxisSize: MainAxisSize.max,
+                  //  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(left: 10),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.all(Radius.circular(5)),
+                        child: Material(
+                          child: InkWell(
                             child: Container(
+                              height: 40,
+                              width: 40,
+                              child: Icon(Icons.arrow_back_ios),
+                            ),
+                            onTap: onClose != null
+                                ? onClose
+                                : () {
+                                    Navigator.pop(context);
+                                  },
+                          ),
+                          color: Colors.transparent,
+                        ),
+                      ),
+                    ),
+                    //    Expanded(child:
+                    //  Center(child:
+                    Container(
+                      margin: EdgeInsets.only(left: 5, top: 0),
+                      child: Text(
+                        'Заказ №' + orderNumb,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontFamily: 'Medium',
+                          fontSize: 22,
+                          color: StyleColor.text,
+                          height: 1.2,
+                        ),
+                      ),
+                      //    ),
+                      //   ),
+                    ),
+                    //  Expanded(child:
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: !isHot
+                          ? Container()
+                          : Container(
                               color: Colors.transparent,
-                              margin: EdgeInsets.only(right: 15, bottom: 3),
-                              width: 25 * 0.99,
-                              height: 25 * 0.99,
+                              margin: EdgeInsets.only(left: 5, bottom: 10),
+                              width: 11.2 * 0.99,
+                              height: 14 * 0.99,
                               child: Image.asset(
-                                "images/ScladIcons/History@2x.png",
+                                "images/Hot@2x.png",
                                 // isHot?"assets/images/ScladIcons/Hot.png":"",
                                 //   width: 11.2*0.99,
                                 //     height: 14*0.99,
                                 fit: BoxFit.fill,
                               ),
                             ),
-                          )),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Container(
-                              color: Colors.transparent,
-                              margin: EdgeInsets.only(right: 25, bottom: 3),
-                              width: 21 * 0.99,
-                              height: 21 * 0.99,
-                              child: Image.asset(
-                                "images/ScladIcons/ThreePoints@2x.png",
-                                // isHot?"assets/images/ScladIcons/Hot.png":"",
-                                width: 5 * 0.99,
+                      //     ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Row(
+                          children: [
+                            Expanded(
+                                child: Align(
+                              alignment: Alignment.centerRight,
+                              child: Container(
+                                color: Colors.transparent,
+                                margin: EdgeInsets.only(right: 15, bottom: 3),
+                                width: 25 * 0.99,
+                                height: 25 * 0.99,
+                                child: Image.asset(
+                                  "images/ScladIcons/History@2x.png",
+                                  // isHot?"assets/images/ScladIcons/Hot.png":"",
+                                  //   width: 11.2*0.99,
+                                  //     height: 14*0.99,
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            )),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Container(
+                                color: Colors.transparent,
+                                margin: EdgeInsets.only(right: 25, bottom: 3),
+                                width: 21 * 0.99,
                                 height: 21 * 0.99,
-                                //    fit: BoxFit.fill,
+                                child: Image.asset(
+                                  "images/ScladIcons/ThreePoints@2x.png",
+                                  // isHot?"assets/images/ScladIcons/Hot.png":"",
+                                  width: 5 * 0.99,
+                                  height: 21 * 0.99,
+                                  //    fit: BoxFit.fill,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  //  Container(width: 50,),
-                ],
+                  ],
+                ),
               ),
-            ),
-
-            Expanded(
-                child: Container(
-              margin: EdgeInsets.only(left: 16, right: 16, top: 14),
-              child: Column(
-                children: [buildDropdown()],
-              ),
-            ))
-          ],
+              buildSecondScreen()
+            ],
+          ),
         ),
-      )),
-    );
-  }
+  );
 }

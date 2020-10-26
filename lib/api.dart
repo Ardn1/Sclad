@@ -166,7 +166,8 @@ class Api {
           headers['sign'] = _getSign(path, params != null ? params : {});
           response = await http.get('$BASE_URL$path${_getParamsUrl(params)}',
           headers: headers,
-        ); break;
+        );
+          break;
         case Method.POST:
           headers['sign'] = _getSign(path, body);
           body.remove('token');
@@ -542,9 +543,14 @@ class Api {
       || (responseSmall.statusCode == 404 && response.statusCode == 404);
   }
 
-  Future<String> getOrder(String id) async{
+  Future<String> getOrder(String id) async =>
+    await _generateRequest(
+        path: 'orders/'+id,
+        method: Method.GET,
+    ).then((value) {
+      return  value != null ? json.encode(value) : null;
+    });
 
-  }
 
 
 }
